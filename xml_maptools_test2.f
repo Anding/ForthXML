@@ -26,16 +26,16 @@ T{	buf0 buffer_used }T 0 ==		\ do nothing with an empty map
 	1024 allocate-buffer constant buf1
 	
 	
-	EuroForth buf1 xml.write-map<..> 
+	EuroForth buf1 xml.write-map<>..<> 
 	
 	\ serialize buf1 to a file
-	s" %idir%\xml_maptools_test1_a.xml" r/w create-file drop
+	s" %idir%\xml_maptools_test1_b.xml" r/w create-file drop
 	constant test_fileid1
 	buf1 test_fileid1 buffer-to-file 
 	test_fileid1 close-file drop	
 
 	\ open the reference XML file
-	s" %idir%\xml_maptools_test1_reference_a.xml" r/o open-file drop
+	s" %idir%\xml_maptools_test1_reference_b.xml" r/o open-file drop
 	constant test_fileid2
 	test_fileid2 file-to-buffer
 	constant buf2
