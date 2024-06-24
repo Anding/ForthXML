@@ -1,6 +1,5 @@
 \ serialize a forth-map structure to an XML file
-\ requires forth-map/map.fs, forth-map/map-tools.fs
-\ requires 
+\ requires forth-map/map.fs, forth-map/map-tools.fs 
 
 : xml.iter<>..<> ( buf c-addr u map -- buf)
 \ forth-map iterator - xml empty-tag format
