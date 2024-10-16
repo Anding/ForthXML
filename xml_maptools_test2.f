@@ -1,11 +1,12 @@
 \ test for XML.f
 
-include "%idir%\..\forth-map\map.fs"
-include "%idir%\..\forth-map\map-tools.fs"
-include "%idir%\..\ForthBase\buffers\buffers.f"
+include "%idir%\..\ForthBase\libraries\libraries.f"
+NEED buffers
+NEED forth-map
+
 include "%idir%\XML.f"
 include "%idir%\xml_maptools.f"
-include "%idir%\..\simple-tester\simple-tester.f"
+NEED simple-tester
 
 	CR
 Tstart

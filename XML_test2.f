@@ -1,10 +1,10 @@
 \ test for XML.f with forth-maps
+include "%idir%\..\ForthBase\libraries\libraries.f"
+NEED buffers
+NEED forth-map
 
-include "%idir%\..\ForthBase\buffers\buffers.f"
 include "%idir%\XML.f"
-include "%idir%\..\forth-map\map.fs"
-include "%idir%\..\forth-map\map-tools.fs"
-include "%idir%\..\simple-tester\simple-tester.f"
+NEED simple-tester
 	CR
 	
 	\ create maps of properties and values

@@ -1,8 +1,9 @@
 \ test for XML.f
+include "%idir%\..\ForthBase\libraries\libraries.f"
+NEED buffers
 
-include "%idir%\..\ForthBase\buffers\buffers.f"
 include "%idir%\XML.f"
-include "%idir%\..\simple-tester\simple-tester.f"
+NEED simple-tester
 	CR
 	
 	\ create a new buffer
