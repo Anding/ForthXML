@@ -1,5 +1,5 @@
 \ simple xml writer
-\ requires buffers.f
+NEED buffers
 
 : xml.write ( c-addr u buf --)
 	write-buffer ABORT" XML buffer full"
