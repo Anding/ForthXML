@@ -2,7 +2,7 @@
 
 include "%idir%\..\ForthBase\libraries\libraries.f"
 NEED buffers
-NEED forth-map
+NEED ordered-maps
 
 include "%idir%\XML.f"
 include "%idir%\xml_maptools.f"
@@ -11,18 +11,16 @@ NEED simple-tester
 	CR
 Tstart
 
-	256 -> map.space					\ prepare for counted string storage
-	
-	map CONSTANT emptyMap
+	allocate-map CONSTANT emptyMap
 	1024 allocate-buffer constant buf0
 	emptyMap buf0 xml.write-map<..>
 	
 T{	buf0 buffer_used }T 0 ==		\ do nothing with an empty map
  
-	map CONSTANT EuroForth
-	s" 2012" EuroForth >addr s" Oxford" rot place \ string-store, i.e. $!
-	s" 2013" EuroForth >addr s" Hamburg" rot place
-	s" 2014" EuroForth >addr s" Palma" rot place
+	allocate-map CONSTANT EuroForth
+	s" Oxford" EuroForth =>" 2012"
+	s" Hamburg" EuroForth =>" 2013"
+	s" Palma" EuroForth =>" 2014"
 	
 	1024 allocate-buffer constant buf1
 	
@@ -43,14 +41,26 @@ T{	buf0 buffer_used }T 0 ==		\ do nothing with an empty map
 	test_fileid2 close-file drop
 
 T{ buf1 buffer-to-string hashS }T buf2 buffer-to-string hashS ==
+
+	s" original" emptyMap =>" first"
+	s" second" emptyMap =>" second"
+	s" replacement" emptyMap =>" first"
+	buf0 reset-buffer
+T{ emptyMap buf0 xml.write-map<..> buf0 buffer-to-string hashS }T
+	s\" <Property ID=\"FIRST\" Value=\"replacement\" />\r\n<Property ID=\"SECOND\" Value=\"second\" />\r\n" hashS ==
+	emptyMap reset-map
+	buf0 reset-buffer
+T{ emptyMap buf0 xml.write-map<..> buf0 buffer-to-string hashS }T
+	s\" <Property ID=\"FIRST\" Value=\"\" />\r\n<Property ID=\"SECOND\" Value=\"\" />\r\n" hashS ==
+	emptyMap erase-map
+	buf0 reset-buffer
+T{ emptyMap buf0 xml.write-map<..> buf0 buffer_used }T 0 ==
 Tend
 	CR
-	
-\ review buffers
-	buf1 buffer-to-string dump
-	buf2 buffer-to-string dump                  
 
 \ release resources
 	buf0 free-buffer
 	buf1 free-buffer
 	buf2 free-buffer
+	emptyMap free-map
+	EuroForth free-map
