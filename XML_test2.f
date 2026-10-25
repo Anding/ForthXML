@@ -29,26 +29,28 @@ NEED simple-tester
 	s" Observatorio de Aras de los Olmos (OAO)" XISFimage =>" Observation:Location:Name"
 	
 	
-	: xml-iterator { buf key-addr key-u value-addr value-u -- buf }
-		s" Property" buf xml.<tag
-		s" id" key-addr key-u buf xml.keyval
-		s" type" key-addr key-u XISFtypes map@ buf xml.keyval
+	: xml-iterator { buf ior key-addr key-u value-addr value-u -- buf ior }
+		buf
+		ior if ior exit then
+		s" Property" buf xml.<tag ?dup if exit then
+		s" id" key-addr key-u buf xml.keyval ?dup if exit then
+		s" type" key-addr key-u XISFtypes map@ buf xml.keyval ?dup if exit then
 		key-addr key-u XISFattribute map@ toInteger if
-			s" value" value-addr value-u buf xml.keyval
+			s" value" value-addr value-u buf xml.keyval ?dup if exit then
 			buf xml./>
 		else
-			buf xml.>
-			value-addr value-u buf xml.write
+			buf xml.> ?dup if exit then
+			value-addr value-u buf xml.write ?dup if exit then
 			s" Property" buf xml.</tag>
 		then
-		buf
 	;
 	
 	\ create a new buffer
 	1024 allocate-buffer
 	constant buf1 
 
-	buf1 ' xml-iterator XISFimage map-for-each drop
+Tstart
+	T{ buf1 0 ' xml-iterator XISFimage map-for-each nip }T 0 ==
 	
 	\ save the XML to a file
 	s" %idir%\XML_test2.xml" r/w create-file drop
@@ -64,7 +66,6 @@ NEED simple-tester
 	test_fileid2 close-file drop
 	
 	\ compare the buffers
- Tstart
 	T{ buf1 buffer-to-string hashS }T buf2 buffer-to-string hashS ==
 
  Tend

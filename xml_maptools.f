@@ -2,29 +2,31 @@
 
 NEED ordered-maps
 
-: xml.iter<>..<> { buf key-addr key-u value-addr value-u -- buf }
+: xml.iter<>..<> { buf ior key-addr key-u value-addr value-u -- buf ior }
 \ <Property ID="key">value</Property>
-    s" Property" buf xml.<tag
-    s" ID" key-addr key-u buf xml.keyval
-    buf xml.>
-    value-addr value-u buf xml.write
+    buf
+    ior if ior exit then
+    s" Property" buf xml.<tag ?dup if exit then
+    s" ID" key-addr key-u buf xml.keyval ?dup if exit then
+    buf xml.> ?dup if exit then
+    value-addr value-u buf xml.write ?dup if exit then
     s" Property" buf xml.</tag>
-    buf
 ;
 
-: xml.iter<..> { buf key-addr key-u value-addr value-u -- buf }
+: xml.iter<..> { buf ior key-addr key-u value-addr value-u -- buf ior }
 \ <Property ID="key" Value="value"/>
-    s" Property" buf xml.<tag
-    s" ID" key-addr key-u buf xml.keyval
-    s" Value" value-addr value-u buf xml.keyval
-    buf xml./>
     buf
+    ior if ior exit then
+    s" Property" buf xml.<tag ?dup if exit then
+    s" ID" key-addr key-u buf xml.keyval ?dup if exit then
+    s" Value" value-addr value-u buf xml.keyval ?dup if exit then
+    buf xml./>
 ;
 
-: xml.write-map<>..<> ( map buf -- )
-    ['] xml.iter<>..<> rot map-for-each drop
+: xml.write-map<>..<> ( map buf -- ior )
+    0 ['] xml.iter<>..<> 3 roll map-for-each nip
 ;
 
-: xml.write-map<..> ( map buf -- )
-    ['] xml.iter<..> rot map-for-each drop
+: xml.write-map<..> ( map buf -- ior )
+    0 ['] xml.iter<..> 3 roll map-for-each nip
 ;

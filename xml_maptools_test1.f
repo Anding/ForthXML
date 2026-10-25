@@ -13,7 +13,7 @@ Tstart
 
 	allocate-map CONSTANT emptyMap
 	1024 allocate-buffer constant buf0
-	emptyMap buf0 xml.write-map<..>
+	T{ emptyMap buf0 xml.write-map<..> }T 0 ==
 	
 T{	buf0 buffer_used }T 0 ==		\ do nothing with an empty map
  
@@ -25,7 +25,7 @@ T{	buf0 buffer_used }T 0 ==		\ do nothing with an empty map
 	1024 allocate-buffer constant buf1
 	
 	
-	EuroForth buf1 xml.write-map<..> 
+	T{ EuroForth buf1 xml.write-map<..> }T 0 ==
 	
 	\ serialize buf1 to a file
 	s" %idir%\xml_maptools_test1_a.xml" r/w create-file drop
@@ -47,14 +47,23 @@ T{ buf1 buffer-to-string hashS }T buf2 buffer-to-string hashS ==
 	s" replacement" emptyMap =>" first"
 	buf0 reset-buffer
 T{ emptyMap buf0 xml.write-map<..> buf0 buffer-to-string hashS }T
-	s\" <Property ID=\"FIRST\" Value=\"replacement\" />\r\n<Property ID=\"SECOND\" Value=\"second\" />\r\n" hashS ==
+	0 s\" <Property ID=\"FIRST\" Value=\"replacement\" />\r\n<Property ID=\"SECOND\" Value=\"second\" />\r\n" hashS ==
 	emptyMap reset-map
 	buf0 reset-buffer
 T{ emptyMap buf0 xml.write-map<..> buf0 buffer-to-string hashS }T
-	s\" <Property ID=\"FIRST\" Value=\"\" />\r\n<Property ID=\"SECOND\" Value=\"\" />\r\n" hashS ==
+	0 s\" <Property ID=\"FIRST\" Value=\"\" />\r\n<Property ID=\"SECOND\" Value=\"\" />\r\n" hashS ==
 	emptyMap erase-map
 	buf0 reset-buffer
-T{ emptyMap buf0 xml.write-map<..> buf0 buffer_used }T 0 ==
+T{ emptyMap buf0 xml.write-map<..> buf0 buffer_used }T 0 0 ==
+	4 allocate-buffer constant small-buffer
+T{ s" too long" small-buffer xml.write 0<> small-buffer buffer_used }T -1 0 ==
+T{ s" x" small-buffer xml.write }T 0 ==
+	small-buffer reset-buffer
+T{ s" x" small-buffer xml.append }T -1 ==
+	s" Oxford" emptyMap =>" 2012"
+T{ emptyMap small-buffer xml.write-map<..> 0<> }T -1 ==
+T{ depth }T 0 ==
+	small-buffer free-buffer
 Tend
 	CR
 

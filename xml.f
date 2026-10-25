@@ -1,67 +1,62 @@
 \ simple xml writer
 NEED buffers
 
-: xml.write ( c-addr u buf --)
-	write-buffer ABORT" XML buffer full"
+: xml.write ( c-addr u buf -- ior )
+	write-buffer dup if cr ." XML buffer full" cr then
 ;
 
-: xml.echo ( c buf --)
-	echo-buffer ABORT" XML buffer full"
+: xml.echo ( c buf -- ior )
+	echo-buffer dup if cr ." XML buffer full" cr then
 ;	
 
-: xml.<??> ( buf -- )
+: xml.<??> ( buf -- ior )
 \ write the full XML prolog tag and newline (Windows format)
 	s\" <?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n" rot xml.write
 ;
 
-: xml.<tag ( c-addr u buf --)
+: xml.<tag { caddr u buf -- ior }
 \ open an XML start-tag or empty-element-tag
-	>R
-	'<' R@ xml.echo
-	R> xml.write
+	'<' buf xml.echo ?dup if exit then
+	caddr u buf xml.write
 ;
 
-: xml.> ( buf --)
+: xml.> ( buf -- ior )
 \ close an XML start-tag and newline (Windows format)
 	s\" >\r\n" rot xml.write
 ;
 
-: xml./> ( buf --)
+: xml./> ( buf -- ior )
 \ close an XML empty-element tag and newline (Windows format)
 	s\"  />\r\n" rot xml.write
 ;
 
-: xml.</tag> ( c-addr u buf --)
+: xml.</tag> { caddr u buf -- ior }
 \ write an XML end-tag and newline (Windows format)
-	>R
-	s" </" R@ xml.write
-	R@ xml.write
-	s\" >\r\n" R> xml.write
+	s" </" buf xml.write ?dup if exit then
+	caddr u buf xml.write ?dup if exit then
+	s\" >\r\n" buf xml.write
 ;
 
-: xml.keyval ( c-addr1 u1 c-addr2 u2 buf --)
+: xml.keyval { key-addr key-u value-addr value-u buf -- ior }
 \ write a key (c-addr1 u1) value (c-addr2 u2) pair
-	>R										( c1 u1 c2 u2 R:b)
-	BL R@ xml.echo						( c1 u1 c2 u2 R:b)		\ ' ' is not a space!
-	2swap R@ xml.write				( c2 u2 R:b)
-	s\" =\"" R@ xml.write			( c2 u2 R:b)
-	R@ xml.write						( R:b)
-	'"' R> xml.echo					( )
+	BL buf xml.echo ?dup if exit then
+	key-addr key-u buf xml.write ?dup if exit then
+	s\" =\"" buf xml.write ?dup if exit then
+	value-addr value-u buf xml.write ?dup if exit then
+	'"' buf xml.echo
 ;
 
-: xml.append ( c-addr u buf --)
+: xml.append { caddr u buf -- ior }
 \ append a strng to the value just written and reclose
-	>R
-	R@ backspace-buffer ABORT" XML buffer empty"
-	R@ xml.write
-	'"' R> xml.echo
+	buf backspace-buffer if cr ." XML buffer empty" cr -1 exit then
+	caddr u buf xml.write ?dup if exit then
+	'"' buf xml.echo
 ;
 
-: xml.comment ( c-addr u buf --)
+: xml.comment { caddr u buf -- ior }
 \ write an XML comment
-	>R
-	s" <!-- " R@ xml.write
-	R@ xml.write
-	s\"  -->\r\n" R> xml.write
+	s" <!-- " buf xml.write ?dup if exit then
+	caddr u buf xml.write ?dup if exit then
+	s\"  -->\r\n" buf xml.write
 ;
 	
